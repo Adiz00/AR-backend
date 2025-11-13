@@ -3,6 +3,9 @@ import User from '../models/User.js';
 import { hashPassword, comparePassword } from '../utils/hash.js';
 import jwt from 'jsonwebtoken';
 import blacklistToken from '../models/blacklistToken.js';
+import { generateOtp } from '../utils/otpHelper.js';
+import { sendEmail } from '../utils/sendEmail.js';
+import Otp from '../models/Otp.js';
 
 export const registerUser = async (req, res) => {
     try {
@@ -35,7 +38,8 @@ export const registerUser = async (req, res) => {
 
 
       res.status(201).json({ message: 'User registered successfully', user_id: user._id });
-    } catch (err) {
+  }
+   catch (err) {
       console.error(err);
       res.status(500).json({ message: 'Registration failed', error: err.message });
     }
@@ -139,62 +143,62 @@ export const registerUser = async (req, res) => {
 //   }
 
 //   // FORGOT PASSWORD - Send OTP
-//   export const sendOtpToEmail = async (req, res) => {
-//   try {
-//     const { email } = req.body;
-//     if (!email) return res.status(400).json({ message: 'Email is required' });
+  export const sendOtpToEmail = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ message: 'Email is required' });
 
-//     const user = await User.findOne({ email });
-//     if (!user) return res.status(404).json({ message: 'User not found' });
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ message: 'User not found' });
 
-//     const otp = generateOtp();
-//     await Otp.findOneAndUpdate(
-//       { email },
-//       { otp },
-//       { upsert: true, new: true }
-//     );
+    const otp = generateOtp();
+    await Otp.findOneAndUpdate(
+      { email },
+      { otp },
+      { upsert: true, new: true }
+    );
 
-//     await sendEmail(email, 'Password Reset OTP', `Your OTP is: ${otp}`);
+    await sendEmail(email, 'Password Reset OTP', `Your OTP is: ${otp}`);
 
-//     res.status(200).json({ message: 'OTP sent to email' });
-//   } catch (err) {
-//     res.status(500).json({ message: 'Failed to send OTP', error: err.message });
-//   }
-//   };
+    res.status(200).json({ message: 'OTP sent to email' });
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to send OTP', error: err.message });
+  }
+  };
 
 // // VERIFY OTP and RESET PASSWORD
-//   export const verifyOtpAndResetPassword = async (req, res) => {
-//   try {
-//     const { email, otp, newPassword, confirmPassword } = req.body;
-//     if (!email || !otp || !newPassword || !confirmPassword) {
-//       return res.status(400).json({ message: 'All fields are required' });
-//     }
+  export const verifyOtpAndResetPassword = async (req, res) => {
+  try {
+    const { email, otp, newPassword, confirmPassword } = req.body;
+    if (!email || !otp || !newPassword || !confirmPassword) {
+      return res.status(400).json({ message: 'All fields are required' });
+    }
 
-//     if (newPassword.length < 6 || confirmPassword.length < 6) {
-//       return res.status(400).json({ message: 'Password must be at least 6 characters long' });
-//     }
+    if (newPassword.length < 6 || confirmPassword.length < 6) {
+      return res.status(400).json({ message: 'Password must be at least 6 characters long' });
+    }
     
-//     if (newPassword !== confirmPassword) {
-//       return res.status(400).json({ message: 'Passwords do not match' });
-//     }
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({ message: 'Passwords do not match' });
+    }
 
-//     const record = await Otp.findOne({ email });
-//     if (!record || record.otp !== otp) {
-//       return res.status(400).json({ message: 'Invalid or expired OTP' });
-//     }
+    const record = await Otp.findOne({ email });
+    if (!record || record.otp !== otp) {
+      return res.status(400).json({ message: 'Invalid or expired OTP' });
+    }
 
-//     const user = await User.findOne({ email });
-//     if (!user) return res.status(404).json({ message: 'User not found' });
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ message: 'User not found' });
 
-//     user.password = await hashPassword(newPassword);
-//     await user.save();
-//     await Otp.deleteOne({ email });
+    user.password = await hashPassword(newPassword);
+    await user.save();
+    await Otp.deleteOne({ email });
 
-//     res.status(200).json({ message: 'Password reset successfully' });
-//   } catch (err) {
-//     res.status(500).json({ message: 'Failed to reset password', error: err.message });
-//   }
-//   };
+    res.status(200).json({ message: 'Password reset successfully' });
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to reset password', error: err.message });
+  }
+  };
 
 // // RESET PASSWORD (Manual - without OTP flow)
 //   export const resetPassword = async (req, res) => {

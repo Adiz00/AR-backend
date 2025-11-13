@@ -18,7 +18,7 @@ dotenv.config();
 const app = express();
 app.use(cors({
 //   origin: process.env.CLIENT_URL || 'http://localhost:5173' || 'http://localhost:4173' || 'http://localhost:5000D', // frontend origin
-  origin: process.env.CLIENT_URL || 'http://localhost:5173' || 'http://localhost:4173' || 'http://localhost:5000D', // frontend origin
+  origin: 'http://localhost:5173' || 'http://localhost:4173' || 'http://localhost:5000D', // frontend origin
 
   credentials: true // allow cookies to be sent
 }));
@@ -41,16 +41,36 @@ app.use((req, res, next) => {
 app.use(express.json());
 app.use(cookieParser());
 
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ message: 'Something went wrong', error: err.message });
-});
 
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/list', listRoutes);
 
-  
+// app.get('/api/avatar/:avatarId', async (req, res) => {
+//   const { avatarId } = req.params;
+//   // const apiKey = process.env.READY_PLAYER_ME_API_KEY
+
+//   try {
+//     // ✅ Fetch from the CDN instead of api.readyplayer.me
+//     const response = await fetch(`https://models.readyplayer.me/${avatarId}.json`);
+//     if (!response.ok) {
+//       return res.status(response.status).json({ message: "Avatar not found" });
+//     }
+
+//     const data = await response.json();
+//     res.json(data); // ✅ Send metadata back to frontend
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: "Failed to fetch avatar metadata" });
+//   }
+// });
+
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ message: 'Something went wrong', error: err.message });
+});
+
+
 // Create HTTP server
 
 const server = http.createServer(app);
@@ -58,7 +78,7 @@ const server = http.createServer(app);
 
 
 
-mongoose.connect(process.env.MONGO_URI).then(() => {
+mongoose.connect("mongodb+srv://am3161274_db_user:RienaLOUB8Z3yKRe@cluster0.kp2rdxc.mongodb.net/?appName=Cluster0").then(() => {
   console.log('MongoDB connected');
     // try {
     //     const db = mongoose.connection;
