@@ -9,11 +9,21 @@ import listRoutes from './routes/listRoutes.js';
 import http from 'http';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import fs from 'fs';
+import multer from 'multer';
+import Asset from './models/Assets.js';
+import client from './utils/openai.js';
+import cosineSimilarity from './utils/similarity.js';
 
 // Needed for __dirname in ES module
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config();
+
+
+// TEMP folder to store uploads
+const storage = multer.memoryStorage();  // keeps file in RAM, safer for AI detection
+const upload = multer({ storage });
 
 const app = express();
 app.use(cors({
@@ -22,6 +32,7 @@ app.use(cors({
 
   credentials: true // allow cookies to be sent
 }));
+
 
 // Defensive middleware: if client sends Content-Type: application/json but body is empty
 // remove the header so express.json will NOT attempt to parse an empty body and throw.
@@ -45,6 +56,57 @@ app.use(cookieParser());
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/list', listRoutes);
+
+async function getImageEmbedding(filePath) {
+  const buffer = fs.readFileSync(filePath);
+
+  const response = await client.embeddings.create({
+    model: "text-embedding-3-large",
+    input: buffer.toString("base64"),
+    encoding_format: "float",
+  });
+
+  return response.data[0].embedding;
+}
+
+app.post("/api/detect", upload.single("avatar"), async (req, res) => {
+  try {
+    const filePath = req.file.path;
+
+    // 1) avatar embedding
+    const avatarEmbedding = await getImageEmbedding(filePath);
+
+    // 2) fetch all assets from db
+    const assets = await Asset.find({});
+
+    // 3) group by category
+    let best = {
+      shirt: null,
+      pant: null,
+      shoe: null,
+    };
+
+    for (const asset of assets) {
+      const sim = cosineSimilarity(avatarEmbedding, asset.embedding);
+
+      if (!best[asset.category] || sim > best[asset.category].score) {
+        best[asset.category] = {
+          id: asset._id,
+          name: asset.name,
+          score: sim,
+        };
+      }
+    }
+
+    // delete file
+    fs.unlinkSync(filePath);
+
+    res.json(best);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error detecting clothes");
+  }
+});
 
 // app.get('/api/avatar/:avatarId', async (req, res) => {
 //   const { avatarId } = req.params;
