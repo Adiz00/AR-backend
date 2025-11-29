@@ -90,6 +90,7 @@ export const getAllNews = async (req, res) => {
 //     }
 // ];
 
+
 const newsArticles = [
   {
     id: 'a1',
@@ -152,7 +153,7 @@ const newsArticles = [
   {
     id: 'a8',
     title: 'Metallic Finishes Shine on Spring Runways',
-    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRrmS1t8pAM3w43TjZsnFtiQHq4ysoxKQ4oTA&s',
+    image: 'https://assets.vogue.com/photos/61e9c43c8aa98afba69ec2e8/master/w_1600,c_limit/00_story.jpg',
     tags: ['Runway', 'Spring 2025', 'Metallics'],
     excerpt: 'Gold, chrome and iridescent fabrics are returning with futuristic flair.',
     author: 'L. Hart',
@@ -161,7 +162,7 @@ const newsArticles = [
   {
     id: 'a9',
     title: 'Minimalist Chic Makes a Comeback',
-    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRWGsz95nLHpMagYvTebPlEwS8oTWqL8Zvzuw&s',
+    image: 'https://www.carlton-photography.co.uk/wp-content/uploads/2020/09/lifestyle-mens-fashion-in-manchester.jpg',
     tags: ['Minimalism', 'Trends'],
     excerpt: 'Clean lines and neutral palettes are becoming the go-to choice for effortless elegance.',
     author: 'T. James',
@@ -170,35 +171,35 @@ const newsArticles = [
   {
     id: 'a10',
     title: 'Denim Deconstruction Takes Center Stage',
-    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT8sNs2Uxd4feghXhdEapqj5PDPfzJSsb96vQ&s',
+    image: 'https://jetsettimes.com/wp-content/uploads/2022/07/Style-File-The-5-Pieces-Every-Fashion-Forward-Woman-Has-.png',
     tags: ['Denim', 'Streetwear'],
     excerpt: 'Patchwork, frayed seams and asymmetric cuts redefine modern denim.',
   },
   {
     id: 'a11',
     title: 'Knitwear Innovations for Winter Warmth',
-    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRuRgFY8C1fKDG4bwMF2mT54Zbv-GIw-FtKzA&s',
+    image: 'https://www.iconicindia.com/cdn/shop/articles/Fashion_Latest_Trends.png?v=1693421003',
     tags: ['Knitwear', 'Winter'],
     excerpt: 'Hybrid yarns and intricate weaves offer warmth without bulk.',
   },
   {
     id: 'a12',
     title: 'Bold Prints Dominate Resort 2026',
-    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQUB-jBy7Qb_k3MhbvFuy5KJuj6l11HbQ0wTw&s',
+    image: 'https://fashionista.com/.image/c_limit%2Ccs_srgb%2Cq_auto:good%2Cw_700/MTcwNjk1NzQ2NjU0MzE1Nzgy/milan-fashion-week-fall-2020-best-street-style.webp',
     tags: ['Resort', 'Prints'],
     excerpt: 'Vibrant patterns inspired by nature and travel are leading the resort season.',
   },
   {
     id: 'a13',
     title: 'Tech-Integrated Jackets Hit the Market',
-    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT2f70o8F7_ICxTE15jrHB0XvErUc5JMGOobA&s',
+    image: 'https://images.squarespace-cdn.com/content/v1/565506d5e4b05e0c71a09a2d/1565113258589-Q4F4YOMTA4J6XJ3OJ8PJ/Screen+Shot+2018-01-23+at+5.55.07+PM.png?format=1500w',
     tags: ['Tech', 'Outerwear'],
     excerpt: 'Smart jackets now feature temperature regulation and embedded sensors.',
   },
   {
     id: 'a14',
     title: 'Retro Revival: 70s Aesthetic Returns',
-    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTY6zqQQdgVKO6kazNmwyYRDEGxTZ9jdX2JBg&s',
+    image: 'https://media.gq-magazine.co.uk/photos/5d13ac713b3853f4b90e9b1e/16:9/w_1600,c_limit/ss-03-gq-10sep18_b.jpg',
     tags: ['Retro', '1970s'],
     excerpt: 'Bell-bottoms, earthy hues and statement collars are trending again.',
   },
@@ -212,63 +213,63 @@ const newsArticles = [
   {
     id: 'a16',
     title: 'Evening Wear Embraces Feather Details',
-    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTxbdzW8Y7xYhWm8Yfo4nfrFN5ExVeXKV4S_w&s',
+    image: 'https://9f8e62d4.delivery.rocketcdn.me/wp-content/uploads/2025/03/mens-90s-style.jpg',
     tags: ['Evening Wear', 'Trends'],
     excerpt: 'Soft feather trims bring movement and drama to red-carpet looks.',
   },
   {
     id: 'a17',
     title: 'Soft Pastels Take Over Spring Collections',
-    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQUhwy_6FM1gj7YvhqrOsRFvY9uzW1bCletSg&s',
+    image: 'https://cdn.shopify.com/s/files/1/2378/2395/files/Key_Questions_About_Influential_Fashion_Trends_for_Women_in_2023_480x480.jpg?v=1686557123',
     tags: ['Colors', 'Spring'],
     excerpt: 'Designers gravitate toward lavender, blush and mint tones for gentle sophistication.',
   },
   {
     id: 'a18',
     title: 'Menswear Sees Rise in Wide-Leg Trousers',
-    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzPzr276UxYPDdiEx5ZY9YrOvAERJ3lrb_tQ&s',
+    image: 'https://media.istockphoto.com/id/1428994315/photo/smiling-woman-outdoor-portrait-short-blonde-hair-fashion-model-wears-stylish-clothes-double.jpg?s=612x612&w=0&k=20&c=NWemwMvwX5nHte3jGH1jj_EeHUW8RMebuiFjbdm7G5Y=',
     tags: ['Menswear', 'Trends'],
     excerpt: 'Relaxed silhouettes dominate menswear, offering comfort and style.',
   },
   {
     id: 'a19',
     title: 'Luxury Brands Embrace Digital Runways',
-    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRjY-u0RCDmT43cMoX3Nqi5GXFM6klT7Sv5Iw&s',
+    image: 'https://www.japanbuzz.info/wp-content/uploads/2018/04/Japanese_Fashion_Influencers_Tribes.jpg',
     tags: ['Digital Fashion', 'Runway'],
     excerpt: 'High-end labels experiment with VR catwalks and immersive presentations.',
   },
   {
     id: 'a20',
     title: 'Floral Embroidery Makes a Delicate Return',
-    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ6fCGItBzKcsoAutEIKH5dDa3h5XjyOlZgWQ&s',
+    image: 'https://assets.vogue.com/photos/65b27a7197f83442a161aea9/master/w_1600,c_limit/VO0324_Designers_22.jpg',
     tags: ['Embroidery', 'Trends'],
     excerpt: 'Hand-stitched blooms elevate dresses, blouses and accessories.',
   },
   {
     id: 'a21',
     title: 'Athleisure Gets a Tailored Upgrade',
-    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR875EXaTiQYPA6sFqzJ1iTH6b6NGpY0aij1Q&s',
+    image: 'https://plus.unsplash.com/premium_photo-1671198905435-20f8d166efb2?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     tags: ['Athleisure', 'Tailoring'],
     excerpt: 'Structured joggers and blazer-matching hoodies bridge comfort and refinement.',
   },
   {
     id: 'a22',
     title: 'Eco-Dyes Offer Vibrant New Palettes',
-    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS0MR6njNe35l-pzrg16ef8NPocaJE8HPPJtQ&s',
+    image: 'https://stylegirlfriend.com/wp-content/uploads/2024/11/winter-style-2024.jpg',
     tags: ['Sustainability', 'Materials'],
     excerpt: 'Natural dyeing methods now rival synthetic colors in vibrancy and longevity.',
   },
   {
     id: 'a23',
     title: 'Winter Coats Trend Toward Maxi Lengths',
-    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTxF7StRFAW5pzGJHTug7PSB6tGZJY_EoKCAQ&s',
+    image: 'https://media.gq-magazine.co.uk/photos/5f11c9505c7c349fdae82d51/16:9/w_1920,h_1080,c_limit/20200717-roundup-trends-13.jpg',
     tags: ['Outerwear', 'Winter'],
     excerpt: 'Full-length silhouettes offer drama and improved insulation.',
   },
   {
     id: 'a24',
     title: 'Statement Earrings Reclaim the Spotlight',
-    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4DGnJBG_djioG6eni8OXP8-jgyg7cLQYGyw&s',
+    image: 'https://as1.ftcdn.net/v2/jpg/01/56/89/60/1000_F_156896021_yCTTXnnYBXto4qX3c0MuHYaQ8KENwu2l.jpg',
     tags: ['Accessories', 'Jewelry'],
     excerpt: 'Sculptural metals and oversized gems dominate earring trends.',
   },
@@ -282,40 +283,39 @@ const newsArticles = [
   {
     id: 'a26',
     title: 'Utilitarian Pockets Are Back in Style',
-    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcThQj3mZG2WvTvws_wxCOiRqTnzvHHkeN_tUg&s',
+    image: 'https://as1.ftcdn.net/v2/jpg/04/01/34/48/1000_F_401344894_1acbpU9HYknxCvJud2hH3lAamnmElbdc.jpg',
     tags: ['Utility', 'Streetwear'],
     excerpt: 'Cargo elements appear across skirts, jackets and trousers.',
   },
   {
     id: 'a27',
     title: 'Faux Fur Innovations Mimic Real Texture',
-    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTocjANXg9U8bE6rklJzIphRlCZjrL5fSe9wg&s',
+    image: 'https://as1.ftcdn.net/v2/jpg/03/12/76/92/1000_F_312769290_7xJPwe1vgnTbrjmA7aRLduzSf0PcCdDA.jpg',
     tags: ['Faux Fur', 'Winter'],
     excerpt: 'Next-gen materials offer ethical luxury with remarkable softness.',
   },
   {
     id: 'a28',
     title: 'Neon Accents Electrify Fall Outfits',
-    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQKbUad6jDoCynKgO0REV4EohmlZnYpWhtz7w&s',
+    image: 'https://as1.ftcdn.net/v2/jpg/04/68/47/52/1000_F_468475205_c6NijcwOaVBUCUwICO2GT1PdituNHd2o.jpg',
     tags: ['Colors', 'Fall'],
     excerpt: 'Pops of neon contrast with muted layers for dynamic styling.',
   },
   {
     id: 'a29',
     title: 'Ballet-Inspired Fashion Gains Momentum',
-    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQdwHfyYw23O8S-Q1jHknk2OzpabpHzOpJrwg&s',
+    image: 'https://as1.ftcdn.net/v2/jpg/04/24/41/48/1000_F_424414852_YNxUqj5Wk0kNjnrNtKfQyduRN5bLLSqk.jpg',
     tags: ['Balletcore', 'Trends'],
     excerpt: 'Soft tulle, wrap sweaters and satin shoes define the balletcore movement.',
   },
   {
     id: 'a30',
     title: 'The Rise of Monochrome Power Dressing',
-    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQRPWFeB5x6Lca7P8p9-FcZwNGsGBKF0KKqkQ&s',
+    image: 'https://as2.ftcdn.net/v2/jpg/02/66/27/27/1000_F_266272736_JqAyqk4q5GEM6M6kiX2s1UT0h63iw4q5.jpg',
     tags: ['Monochrome', 'Power Dressing'],
     excerpt: 'Head-to-toe tonal outfits communicate confidence and clarity.',
   }
 ];
-
 
       res.status(200).json({ news: newsArticles });
     } catch (err) {
