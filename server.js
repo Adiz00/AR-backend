@@ -13,23 +13,112 @@ import fs from 'fs';
 import multer from 'multer';
 import Asset from './models/Assets.js';
 import client from './utils/openai.js';
-import cosineSimilarity from './utils/similarity.js';
-
-// Needed for __dirname in ES module
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-dotenv.config();
+import OpenAI from 'openai';
+import cloudinary from './config/cloudnary.js';
+import { pipeline } from "@xenova/transformers";
+import axios from 'axios';
 
 
 // TEMP folder to store uploads
-const storage = multer.memoryStorage();  // keeps file in RAM, safer for AI detection
-const upload = multer({ storage });
+// const storage = multer.memoryStorage();  // keeps file in RAM, safer for AI detection
+// const upload = multer({ storage });
+
+// ---------- MULTER CONFIG ----------
+// const storage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     // Ensure uploads folder exists
+//     if (!fs.existsSync("uploads")) {
+//       fs.mkdirSync("uploads");
+//     }
+//     cb(null, "uploads/");
+//   },
+//   filename: (req, file, cb) => {
+//     cb(null, Date.now() + "-" + file.originalname);
+//   }
+// });
+
+// const upload = multer({ storage });
+// ------------------------------------
+
+// TEMP memory storage (we are NOT saving to disk)
+const upload = multer({ storage: multer.memoryStorage() });
+
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+// Your sample images already hosted on Cloudinary
+
+
+//  Full avatar image 
+// https://collection.cloudinary.com/dw9xedh3z/925365d09b134f4e2e909f1b23671a65
+
+// -----------------------
+// SAMPLE ITEM URLS
+// You can move these to DB later. Must be public URLs.
+// -----------------------
+const SAMPLE_IMAGES = [
+  { type: "shirt", url: "https://res.cloudinary.com/dw9xedh3z/image/upload/v1764722706/WhatsApp_Image_2025-11-28_at_9.49.13_PM_yt6ktq-removebg-preview_p2bz31.png" },
+  { type: "shirt", url: "https://res.cloudinary.com/dw9xedh3z/image/upload/v1764722706/WhatsApp_Image_2025-11-28_at_9.54.54_PM_wlghyy-removebg-preview_c8vfxk.png" },
+  { type: "shirt", url: "https://res.cloudinary.com/dw9xedh3z/image/upload/v1764793726/avatar-shirtr4-removebg-preview_dia0ti.png" },
+  { type: "shirt", url: "https://res.cloudinary.com/dw9xedh3z/image/upload/v1764793727/avatar-shirt3-removebg-preview_hn4p9e.png" },
+  { type: "pant", url: "https://res.cloudinary.com/dw9xedh3z/image/upload/v1764723034/WhatsApp_Image_2025-11-28_at_9.49.44_PM_y1jdin-removebg-preview_uespop.png" },
+  { type: "pant", url: "https://res.cloudinary.com/dw9xedh3z/image/upload/v1764723034/WhatsApp_Image_2025-11-28_at_9.56.00_PM_my3jbt-removebg-preview_s40166.png" },
+  { type: "pant", url: "https://res.cloudinary.com/dw9xedh3z/image/upload/v1764793727/avatar-pant4-removebg-preview_mqpy1z.png" },
+  { type: "pant", url: "https://res.cloudinary.com/dw9xedh3z/image/upload/v1764793739/avatar-pant3-removebg-preview_eq78vd.png" },
+  { type: "shoe", url: "https://res.cloudinary.com/dw9xedh3z/image/upload/v1764723035/WhatsApp_Image_2025-11-28_at_9.56.35_PM_zdkare-removebg-preview_fc2lyx.png" },
+  { type: "shoe", url: "https://res.cloudinary.com/dw9xedh3z/image/upload/v1764723035/WhatsApp_Image_2025-11-28_at_9.50.13_PM_nwfqwd-removebg-preview_mwfeoe.png" },
+  { type: "shoe", url: "https://res.cloudinary.com/dw9xedh3z/image/upload/v1764793725/avatar-shoes4-removebg-preview_wohotj.png" },
+  { type: "shoe", url: "https://res.cloudinary.com/dw9xedh3z/image/upload/v1764793726/avatar-shoes3-removebg-preview_mtoryo.png" },
+];
+// -----------------------
+// 1️⃣ FUNCTION: COMPARE ONE ITEM WITH AVATAR
+// -----------------------
+async function compareImages(avatarUrl, itemUrl) {
+  const result = await client.chat.completions.create({
+    model: "gpt-4o-mini",
+    messages: [
+      {
+        role: "user",
+        content: [
+          { type: "image_url", image_url: { url: avatarUrl } },
+          { type: "image_url", image_url: { url: itemUrl } },
+          {
+            type: "text",
+            text: "Does the avatar wear this exact clothing item? Answer ONLY 'yes' or 'no'.",
+          },
+        ],
+      },
+    ],
+  });
+
+  return result.choices[0].message.content.trim().toLowerCase();
+}
+
+// -----------------------
+// 2️⃣ FUNCTION: CHECK ALL CLOTHING ITEMS
+// -----------------------
+async function detectClothes(avatarUrl) {
+  let detected = { shirt: null, pant: null, shoe: null };
+
+  for (const item of SAMPLE_IMAGES) {
+    const answer = await compareImages(avatarUrl, item.url);
+
+    console.log(` ${answer}`);
+
+    if (answer === "yes") {
+      detected[item.type] = item.url;
+    }
+  }
+
+  return detected;
+}
+
+
+
 
 const app = express();
 app.use(cors({
 //   origin: process.env.CLIENT_URL || 'http://localhost:5173' || 'http://localhost:4173' || 'http://localhost:5000D', // frontend origin
   origin: 'http://localhost:5173' || 'http://localhost:4173' || 'http://localhost:5000D', // frontend origin
-
   credentials: true // allow cookies to be sent
 }));
 
@@ -57,75 +146,233 @@ app.use(cookieParser());
 app.use('/api/auth', authRoutes);
 app.use('/api/list', listRoutes);
 
-async function getImageEmbedding(filePath) {
-  const buffer = fs.readFileSync(filePath);
 
-  const response = await client.embeddings.create({
-    model: "text-embedding-3-large",
-    input: buffer.toString("base64"),
-    encoding_format: "float",
-  });
 
-  return response.data[0].embedding;
-}
 
-app.post("/api/detect", upload.single("avatar"), async (req, res) => {
+
+
+app.get('/api/avatar/:avatarId', async (req, res) => {
+  const { avatarId } = req.params;
+  // const apiKey = process.env.READY_PLAYER_ME_API_KEY
+
   try {
-    const filePath = req.file.path;
-
-    // 1) avatar embedding
-    const avatarEmbedding = await getImageEmbedding(filePath);
-
-    // 2) fetch all assets from db
-    const assets = await Asset.find({});
-
-    // 3) group by category
-    let best = {
-      shirt: null,
-      pant: null,
-      shoe: null,
-    };
-
-    for (const asset of assets) {
-      const sim = cosineSimilarity(avatarEmbedding, asset.embedding);
-
-      if (!best[asset.category] || sim > best[asset.category].score) {
-        best[asset.category] = {
-          id: asset._id,
-          name: asset.name,
-          score: sim,
-        };
-      }
+    // ✅ Fetch from the CDN instead of api.readyplayer.me
+    const response = await fetch(`https://models.readyplayer.me/${avatarId}.json`);
+    if (!response.ok) {
+      return res.status(response.status).json({ message: "Avatar not found" });
     }
 
-    // delete file
-    fs.unlinkSync(filePath);
-
-    res.json(best);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Error detecting clothes");
+    const data = await response.json();
+    res.json(data); // ✅ Send metadata back to frontend
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to fetch avatar metadata" });
   }
 });
 
-// app.get('/api/avatar/:avatarId', async (req, res) => {
-//   const { avatarId } = req.params;
-//   // const apiKey = process.env.READY_PLAYER_ME_API_KEY
-
+// ---------------------- API ROUTE ----------------------
+// app.post("/compare-avatar", upload.single("avatar"), async (req, res) => {
 //   try {
-//     // ✅ Fetch from the CDN instead of api.readyplayer.me
-//     const response = await fetch(`https://models.readyplayer.me/${avatarId}.json`);
-//     if (!response.ok) {
-//       return res.status(response.status).json({ message: "Avatar not found" });
-//     }
+//     console.log("Avatar received...");
 
-//     const data = await response.json();
-//     res.json(data); // ✅ Send metadata back to frontend
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ error: "Failed to fetch avatar metadata" });
+//     // if (!req.file) {
+//     //   return res.status(400).json({ error: "avatar file is required" });
+//     // }
+
+//     // Upload avatar buffer to Cloudinary
+//     const uploadResult = await cloudinary.uploader.upload_stream(
+//       { resource_type: "image" },
+//       async (error, result) => {
+//         if (error) {
+//           console.error(error);
+//           return res.status(500).json({ error: "Cloudinary upload failed" });
+//         }
+
+//         // const avatarUrl = result.secure_url;
+//         const avatarUrl = 'https://collection.cloudinary.com/dw9xedh3z/925365d09b134f4e2e909f1b23671a65';
+
+//         // ---- GET EMBEDDING FOR USER AVATAR ----
+//         const avatarVec = await getEmbedding(avatarUrl);
+
+//         // ---- GET EMBEDDINGS FOR SAMPLE IMAGES ----
+//         const scores = [];
+
+//         for (const sample of SAMPLE_IMAGES) {
+//           const sampleVec = await getEmbedding(sample);
+//           const similarity = cosineSimilarity(avatarVec, sampleVec);
+
+//           scores.push({
+//             sample,
+//             similarity,
+//           });
+//         }
+
+//         // Sort high to low
+//         scores.sort((a, b) => b.similarity - a.similarity);
+
+//         return res.json({
+//           uploaded_avatar: avatarUrl,
+//           best_match: scores[0],
+//           comparisons: scores
+//         });
+//       }
+//     );
+
+//     uploadResult.end(req.file.buffer);
+
+//   } catch (err) {
+//     console.error("Server Error", err);
+//     res.status(500).json({ error: "Internal Server Error" });
 //   }
 // });
+
+// 3️⃣ API: UPLOAD + DETECT CLOTHES
+// -----------------------
+// app.post("/api/detect", upload.single("avatar"), async (req, res) => {
+app.post("/api/detect", async (req, res) => {
+  try {
+    // upload avatar to cloudinary
+    // const result = await cloudinary.uploader.upload(req.file.path, {
+    //   folder: "avatars",
+    // });
+
+    // const avatarUrl = result.secure_url;
+    const avatarUrl = 'https://collection.cloudinary.com/dw9xedh3z/925365d09b134f4e2e909f1b23671a65';
+    // now compare with all clothing items
+    const detected = await detectClothes(avatarUrl);
+
+    // delete local file
+    // fs.unlinkSync(req.file.path);
+
+    res.json({
+      success: true,
+      avatarUrl,
+      detected,
+    });
+  } catch (err) {
+    console.error("ERROR:", err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+
+// ----------------------------
+// 1) CLIP SIMILARITY CHECK
+// ----------------------------
+let clipModel = null;
+
+// Load CLIP ONCE (Async but safe)
+const clipReady = (async () => {
+  clipModel = await pipeline("feature-extraction", "Xenova/clip-vit-base-patch32");
+})();
+
+// Safe helper to wait for model load
+async function ensureClipLoaded() {
+  if (!clipModel) await clipReady;
+}
+
+// Get embedding from image URL
+async function getClipEmbedding(url) {
+  await ensureClipLoaded();
+
+  const res = await fetch(url);
+  const buffer = Buffer.from(await res.arrayBuffer());
+
+  // Xenova returns object, not function
+  const out = await clipModel(buffer, {
+    pooling: "mean",
+    normalize: true,
+  });
+
+  return out.data;
+}
+
+function cosineSimilarity(a, b) {
+  const dot = a.reduce((sum, x, i) => sum + x * b[i], 0);
+  const magA = Math.sqrt(a.reduce((sum, x) => sum + x * x, 0));
+  const magB = Math.sqrt(b.reduce((sum, x) => sum + x * x, 0));
+  return dot / (magA * magB);
+}
+
+app.post("/similarity/clip", async (req, res) => {
+  try {
+    const { avatarUrl } = req.body;
+    // const avatarUrl = 'https://res.cloudinary.com/dw9xedh3z/image/upload/fl_preserve_transparency/v1764696718/avatar_nsoeq0.jpg?_s=public-appshttps://res.cloudinary.com/dw9xedh3z/image/upload/fl_preserve_transparency/v1764696718/avatar_nsoeq0.jpg?_s=public-appshttps://res.cloudinary.com/dw9xedh3z/image/upload/fl_preserve_transparency/v1764696718/avatar_nsoeq0.jpg?_s=public-appshttps://res.cloudinary.com/dw9xedh3z/image/upload/fl_preserve_transparency/v1764696718/avatar_nsoeq0.jpg?_s=public-apps';
+    const itemUrls = SAMPLE_IMAGES;
+
+     const results = [];
+
+    for (const itemUrl of itemUrls) {
+      // Call FastAPI /match endpoint
+      const response = await axios.get("http://localhost:8000/match", {
+        params: {
+          big_url: avatarUrl,
+          small_url: itemUrl.url
+        }
+      });
+      console.log("Response from FastAPI:", response.data);
+      const data = response.data;
+      console.log(`Item: ${itemUrl}, Present: ${data.present}, Confidence: ${data.confidence}, Position: ${data.position}`);
+
+      // Only include images that are present
+      if (data.present) {
+        results.push({
+          itemUrl: itemUrl.url,
+          type: itemUrl.type,
+          confidence: data.confidence,
+          position: data.position
+        });
+      }
+    }
+
+    res.json({ success: true, results });
+
+  } catch (e) {
+    res.status(500).json({ success: false, error: e.message });
+  }
+});
+
+
+// -------------------------------------------
+// 2) YOLOv8 / YOLOv9 — OBJECT FOUND INSIDE?
+// Using Ultralytics Cloud API
+// -------------------------------------------
+const YOLO_API_KEY = "YOUR_YOLO_API_KEY"; // https://hub.ultralytics.com/
+
+app.post("/detect/yolo", async (req, res) => {
+  try {
+    const { avatarUrl, objectPrompt } = req.body;
+
+    const yoloRes = await axios.post(
+      "https://api.ultralytics.com/v1/predict/YOLOv8n",
+      { input: avatarUrl },
+      {
+        headers: {
+          "x-api-key": YOLO_API_KEY,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    const detections = yoloRes.data?.data?.detections || [];
+    const found = detections.some((d) =>
+      d.class.toLowerCase().includes(objectPrompt.toLowerCase())
+    );
+
+    res.json({
+      success: true,
+      found,
+      detections,
+    });
+  } catch (e) {
+    res.status(500).json({ success: false, error: e.message });
+  }
+});
+
+
+
+
+
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
