@@ -9,7 +9,7 @@ import {
 const router = express.Router();
 
 // router.get('/all-customers', authMiddleware, getAllCustomers);
-router.get('/all-news', authMiddleware, getAllNews);
+router.get('/all-news', getAllNews);
 
 
 

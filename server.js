@@ -68,7 +68,16 @@ const SAMPLE_IMAGES = [
   { type: "shoe", url: "https://res.cloudinary.com/dw9xedh3z/image/upload/v1764723035/WhatsApp_Image_2025-11-28_at_9.50.13_PM_nwfqwd-removebg-preview_mwfeoe.png" },
   { type: "shoe", url: "https://res.cloudinary.com/dw9xedh3z/image/upload/v1764793725/avatar-shoes4-removebg-preview_wohotj.png" },
   { type: "shoe", url: "https://res.cloudinary.com/dw9xedh3z/image/upload/v1764793726/avatar-shoes3-removebg-preview_mtoryo.png" },
+  { type: "outfit", url: "https://res.cloudinary.com/dw9xedh3z/image/upload/v1765550392/for-removebg-preview_mktkxs.png" },
+  { type: "outfit", url: "https://res.cloudinary.com/dw9xedh3z/image/upload/v1766237894/black_formal_d9dmvu.png" },
+  { type: "outfit", url: "https://res.cloudinary.com/dw9xedh3z/image/upload/v1766237894/yellow_fnd7w4.png" },
+  { type: "outfit", url: "https://res.cloudinary.com/dw9xedh3z/image/upload/v1766237894/black_for_bl8zqz.png" },
+  { type: "outfit", url: "https://res.cloudinary.com/dw9xedh3z/image/upload/v1766237894/cas_tdgvv8.png" },
+  { type: "outfit", url: "https://res.cloudinary.com/dw9xedh3z/image/upload/v1766237894/men_b_aojvdf.png" },
+  { type: "outfit", url: "https://res.cloudinary.com/dw9xedh3z/image/upload/v1766237894/men_bf_o9gczk.png" },
+  
 ];
+
 // -----------------------
 // 1️⃣ FUNCTION: COMPARE ONE ITEM WITH AVATAR
 // -----------------------

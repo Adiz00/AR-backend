@@ -316,7 +316,18 @@ export const getAllNews = async (req, res) => {
       }
     ];
 
-      res.status(200).json({ news: newsArticles });
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 6;
+      const skip = (page - 1) * limit;
+      const totalCount = newsArticles.length;
+      const paginatedNews = newsArticles.slice(skip, skip + limit);
+
+      res.status(200).json({ 
+        news: paginatedNews,
+        currentPage: page,
+        totalPages: Math.ceil(totalCount / limit),
+        totalCount
+      });
     } catch (err) {
       console.error(err);
       res.status(500).json({ message: 'Failed to fetch news articles', error: err.message });
