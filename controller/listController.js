@@ -1,22 +1,34 @@
+/**
+ * List Controller
+ *
+ * Handles data retrieval operations including:
+ * - User/customer listings with pagination
+ * - Fashion news articles
+ * - Asset management and listings
+ * - Search and filtering functionality
+ */
 
 import User from '../models/User.js';
 
 
+// Get all customers with pagination
 export const getAllCustomers = async (req, res) => {
   try {
+    // Parse pagination parameters
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 5;
     const skip = (page - 1) * limit;
 
+    // Fetch users and total count in parallel
     const [Users, totalCount] = await Promise.all([
       User.find()
-        .populate('user_id', '-password -__v')
+        .populate('user_id', '-password -__v') // Exclude sensitive fields
         .skip(skip)
         .limit(limit),
       User.countDocuments()
     ]);
 
-    res.status(200).json({ 
+    res.status(200).json({
       Users,
       currentPage: page,
       totalPages: Math.ceil(totalCount / limit),
@@ -28,10 +40,11 @@ export const getAllCustomers = async (req, res) => {
   }
 };
 
+// Get all fashion news articles with pagination
 export const getAllNews = async (req, res) => {
     try {
-      // Dummy data for news articles
-//       const newsArticles = [
+      // Static array of fashion news articles (in production, this would come from a database)
+      const newsArticles = [
 //     {
 //         id: 'a1',
 //         title: 'Sculpted Silhouettes: Fall 2025 Trends',
@@ -316,13 +329,14 @@ export const getAllNews = async (req, res) => {
       }
     ];
 
+      // Handle pagination
       const page = parseInt(req.query.page) || 1;
       const limit = parseInt(req.query.limit) || 6;
       const skip = (page - 1) * limit;
       const totalCount = newsArticles.length;
       const paginatedNews = newsArticles.slice(skip, skip + limit);
 
-      res.status(200).json({ 
+      res.status(200).json({
         news: paginatedNews,
         currentPage: page,
         totalPages: Math.ceil(totalCount / limit),
