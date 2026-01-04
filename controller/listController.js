@@ -44,7 +44,7 @@ export const getAllCustomers = async (req, res) => {
 export const getAllNews = async (req, res) => {
     try {
       // Static array of fashion news articles (in production, this would come from a database)
-      const newsArticles = [
+      // const newsArticles = [
 //     {
 //         id: 'a1',
 //         title: 'Sculpted Silhouettes: Fall 2025 Trends',
