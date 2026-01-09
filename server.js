@@ -304,11 +304,11 @@ function cosineSimilarity(a, b) {
 // -----------------------
 const SAMPLE_IMAGES = [
   { type: "shirt", url: "https://res.cloudinary.com/dw9xedh3z/image/upload/v1764722706/WhatsApp_Image_2025-11-28_at_9.49.13_PM_yt6ktq-removebg-preview_p2bz31.png" },
-  { type: "shirt", url: "https://res.cloudinary.com/dw9xedh3z/image/upload/v1764722706/WhatsApp_Image_2025-11-28_at_9.54.54_PM_wlghyy-removebg-preview_c8vfxk.png" },
+  // { type: "shirt", url: "https://res.cloudinary.com/dw9xedh3z/image/upload/v1764722706/WhatsApp_Image_2025-11-28_at_9.54.54_PM_wlghyy-removebg-preview_c8vfxk.png" },
   { type: "shirt", url: "https://res.cloudinary.com/dw9xedh3z/image/upload/v1764793726/avatar-shirtr4-removebg-preview_dia0ti.png" },
   { type: "shirt", url: "https://res.cloudinary.com/dw9xedh3z/image/upload/v1764793727/avatar-shirt3-removebg-preview_hn4p9e.png" },
   { type: "pant", url: "https://res.cloudinary.com/dw9xedh3z/image/upload/v1764723034/WhatsApp_Image_2025-11-28_at_9.49.44_PM_y1jdin-removebg-preview_uespop.png" },
-  { type: "pant", url: "https://res.cloudinary.com/dw9xedh3z/image/upload/v1764723034/WhatsApp_Image_2025-11-28_at_9.56.00_PM_my3jbt-removebg-preview_s40166.png" },
+  // { type: "pant", url: "https://res.cloudinary.com/dw9xedh3z/image/upload/v1764723034/WhatsApp_Image_2025-11-28_at_9.56.00_PM_my3jbt-removebg-preview_s40166.png" },
   { type: "pant", url: "https://res.cloudinary.com/dw9xedh3z/image/upload/v1764793727/avatar-pant4-removebg-preview_mqpy1z.png" },
   { type: "pant", url: "https://res.cloudinary.com/dw9xedh3z/image/upload/v1764793739/avatar-pant3-removebg-preview_eq78vd.png" },
   { type: "shoe", url: "https://res.cloudinary.com/dw9xedh3z/image/upload/v1764723035/WhatsApp_Image_2025-11-28_at_9.56.35_PM_zdkare-removebg-preview_fc2lyx.png" },
@@ -319,6 +319,7 @@ const SAMPLE_IMAGES = [
   { type: "outfit", url: "https://res.cloudinary.com/dw9xedh3z/image/upload/v1767532482/eeb46366-cfd8-4369-b5d2-3cec9a930764_removalai_preview_ndyr3y.png" },
   { type: "outfit", url: "https://res.cloudinary.com/dw9xedh3z/image/upload/v1765550392/black_for-removebg-preview_mbks2l.png" },
   { type: "outfit", url: "https://res.cloudinary.com/dw9xedh3z/image/upload/v1765550393/men_bf-removebg-preview_su4zqt.png" },
+  
   // { type: "outfit", url: "https://res.cloudinary.com/dw9xedh3z/image/upload/v1765550392/for-removebg-preview_mktkxs.png" },
   // // { type: "outfit", url: "https://res.cloudinary.com/dw9xedh3z/image/upload/v1766235716/for_mmezhr.png" },
   // { type: "outfit", url: "https://res.cloudinary.com/dw9xedh3z/image/upload/v1765550393/men_bf-removebg-preview_su4zqt.png" },
